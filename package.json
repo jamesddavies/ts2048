@@ -1,0 +1,23 @@
+{
+  "name": "ts2048",
+  "version": "1.0.0",
+  "description": "2048 in TypeScript",
+  "main": "js/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "concurrently \"tsc -w\" \"less-watch-compiler\" \"watchify -e js/index.js -o js/bundle.js\" \"ws\" ",
+    "build": "tsc && lessc src/less/index.less css/index.css && browserify -e js/index.js -o js/bundle.js"
+  },
+  "keywords": [
+    "TypeScript",
+    "game"
+  ],
+  "author": "James Davies",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^3.5.1",
+    "less": "^3.0.2",
+    "less-watch-compiler": "^1.11.2",
+    "watchify": "^3.11.0"
+  }
+}
