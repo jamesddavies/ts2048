@@ -1,7 +1,9 @@
+import { Position } from './types';
+
 export default class Tile {
     value: number;
-    position: { [key: string]: number }
-    lastMovePosition: { [key: string]: number }
+    position: Position
+    lastMovePosition: Position
     width: number;
     gutterWidth: number;
     domRepresentation: boolean;
@@ -37,16 +39,32 @@ export default class Tile {
     updateValue = (): void => {
         this.value *= 2;
         this.mergedThisTurn = true;
+        this.domElement.style.background = this.getColor();
     }
 
-    generateDomElement = (): void => {
-        let halfGutter = this.gutterWidth / 2;
-        this.domElement.classList.add('tile');
+    getColor = (): string => {
+        let decimal = '0.' + (this.value * 18);
+        let h =  parseFloat(decimal) * (250 - 190) + 190;
+        return 'hsl(' + h + ', 50%, 50%)';
+    }
+
+    getTranslatePosition = (): string => {
+        return "translate(" + this.position.x * this.gridSection + "px, " + this.position.y * this.gridSection + "px)";
+    }
+
+    setDomElementStyles = (): void => {
+        let halfGutter = (this.gutterWidth / 2).toString();
         this.domElement.style.top = halfGutter.toString() + "px";
         this.domElement.style.left = halfGutter.toString() + "px";
         this.domElement.style.width = this.width.toString() + "px";
         this.domElement.style.height = this.width.toString() + "px";
-        this.domElement.style.transform = "translate(" + this.position.x * this.gridSection + "px, " + this.position.y * this.gridSection + "px)";
+        this.domElement.style.transform = this.getTranslatePosition();
+        this.domElement.style.background = this.getColor();
+    }
+
+    generateDomElement = (): void => {
+        this.domElement.classList.add('tile');        
+        this.setDomElementStyles();
         this.domElement.textContent = this.value.toString();
         let grid = document.querySelector("#grid-container > .grid");
         if (grid) {

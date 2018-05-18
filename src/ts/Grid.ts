@@ -1,17 +1,11 @@
 import Tile from './Tile';
-import { GridStateArray, Modifiers } from './types';
-
-enum Directions {
-    Up,
-    Right,
-    Down,
-    Left
-}
+import { GridArray, TileArray, Modifiers, CellArray, Position } from './types';
+import { Directions } from './enums';
 
 export default class Grid {
     size: { [key: string]: number };
-    state: GridStateArray;
-    previousState: GridStateArray;
+    state: GridArray;
+    previousState: GridArray;
     tiles: Tile[];
     startTiles: number;
     tileWidth: number;
@@ -34,7 +28,7 @@ export default class Grid {
         this.addStartTiles();
     }
 
-    buildRepresentation(): GridStateArray {
+    buildRepresentation(): GridArray {
         let gridState = [];
         
         for (let i = 0; i < this.size.across; i++){
@@ -53,7 +47,7 @@ export default class Grid {
         this.updateState(this.buildRepresentation());
     }
 
-    updateState(updateBoard: GridStateArray): void {
+    updateState(updateBoard: GridArray): void {
         this.previousState = this.state;
         this.state = updateBoard;
         this.tiles.forEach((tile: Tile) => !tile.domRepresentation ? tile.generateDomElement() : tile.updateDomElement())
@@ -74,8 +68,8 @@ export default class Grid {
         this.updateBoard();
     }
 
-    availableCells(): Array<{[key: string]: number}> {
-        let availableCells: Array<{[key: string]: number}> = [];
+    availableCells(): CellArray {
+        let availableCells: CellArray = [];
 
         for (let i = 0; i < this.size.across; i++){
             for (let j = 0; j < this.size.down; j++){
@@ -90,7 +84,7 @@ export default class Grid {
 
     makeTileMoves = (direction: number, modifiers: Modifiers): void => {
         this.movedThisTurn = false;
-        this.getDirectionalArrays(direction).forEach((arr: (Tile|null)[]) => {
+        this.getDirectionalArrays(direction).forEach((arr: TileArray) => {
             arr.forEach((tile: Tile|null) => {
                 if (tile){
                     
@@ -126,20 +120,20 @@ export default class Grid {
         }
     }
 
-    getDirectionalArrays = (direction: number): (Tile|null)[][] => {
+    getDirectionalArrays = (direction: number): GridArray => {
         switch (Directions[direction]){
             case 'Up':
             case 'Left':
                 return this.buildDirectionalArrays(direction)
             case 'Down':
             case 'Right':
-                return this.buildDirectionalArrays(direction).map((arr: (Tile|null)[]) => arr.reverse())
+                return this.buildDirectionalArrays(direction).map((arr: TileArray) => arr.reverse())
             default: //Statement should never reach this, satisfies TS compiler
                 return this.buildDirectionalArrays(direction)
         }
     }
 
-    buildDirectionalArrays = (direction: number): (Tile|null)[][] => {
+    buildDirectionalArrays = (direction: number): GridArray => {
         var dir = Directions[direction];
         var collection = [];
         var outer = dir === 'Up' || dir === 'Down' ? this.size.across : this.size.down;
@@ -154,13 +148,13 @@ export default class Grid {
         return collection;
     }
 
-    nextTileIsAvailable = (tilePosition: {[key: string]: number}, modifiers: Modifiers): boolean => {
+    nextTileIsAvailable = (tilePosition: Position, modifiers: Modifiers): boolean => {
         let check = this.nextTile(tilePosition, modifiers);
         
         return check === null || !check === undefined;
     }
 
-    nextTile = (tilePosition: {[key: string]: number}, modifiers: Modifiers): Tile|null|undefined => {
+    nextTile = (tilePosition: Position, modifiers: Modifiers): Tile|null|undefined => {
         let nextPos = {
             across: tilePosition.x + parseInt(modifiers.x, 10),
             down: tilePosition.y + parseInt(modifiers.y, 10)
