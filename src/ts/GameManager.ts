@@ -29,7 +29,8 @@ export default class GameManager {
     handleMove = (direction: number, modifiers: {[key: string]: string}): void => {
         this.grid.makeTileMoves(direction, modifiers);
         this.grid.endTurn();
-        if (this.grid.movedThisTurn) this.grid.addRandomTiles(1)
+        if (this.grid.movedThisTurn) this.grid.addRandomTiles(1);
+        if (this.grid.gameOver()) this.grid.endGame(this.grid.tile2048Exists());
     }
 
     getVector(direction: number): { [key: string]: string } {

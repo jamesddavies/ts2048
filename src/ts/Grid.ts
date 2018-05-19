@@ -11,6 +11,7 @@ export default class Grid {
     tileWidth: number;
     gutterWidth: number;
     movedThisTurn: boolean;
+    message: string;
 
     constructor (across: number, down: number, tileWidth?: number, gutterWidth?: number) {
         this.size = {across: across, down: down}
@@ -21,6 +22,7 @@ export default class Grid {
         this.tileWidth = tileWidth || 110;
         this.gutterWidth = gutterWidth || 14;
         this.movedThisTurn = false;
+        this.message = "";
     }
 
     init(): void {
@@ -171,6 +173,27 @@ export default class Grid {
         this.tiles.forEach((tile: Tile) => tile.mergedThisTurn = false)
     }
 
+    tile2048Exists = (): boolean => {
+        return this.tiles.filter((tile: Tile) => tile.value === 2048).length > 0;
+    }
+
+    gameOver = (): boolean => {
+        console.log(this.size.down * this.size.across)
+        return this.tiles.length === (this.size.down * this.size.across);
+    }
+
+    endGame = (won: boolean): void => {
+        if (won){
+            this.message = "Well done!";
+        } else {
+            this.message = "Game over!";
+        }
+
+        let messageContainer = document.querySelectorAll('.message-container')[0];
+        messageContainer.textContent = this.message;
+        messageContainer.classList.add('show');
+    }
+
     generateDomElement = () => {
         var gridElement = document.createElement('div');
         gridElement.classList.add('grid');
@@ -190,6 +213,9 @@ export default class Grid {
         gridElement.style.width = (this.size.across * this.tileWidth + (this.gutterWidth * (this.size.across))).toString() + "px";
         gridElement.style.height = (this.size.down * this.tileWidth + (this.gutterWidth * (this.size.down))).toString() + "px";
         gridElement.style.borderWidth = tileMargin;
+        let messageContainer = document.createElement('div');
+        messageContainer.classList.add('message-container');
+        fragment.appendChild(messageContainer);
         gridElement.appendChild(fragment);
         let gridContainer = document.querySelector("#grid-container");
         if (gridContainer) gridContainer.appendChild(gridElement);
