@@ -33,9 +33,9 @@ export default class Grid {
     buildRepresentation(): GridArray {
         let gridState = [];
         
-        for (let i = 0; i < this.size.across; i++){
+        for (let i = 0; i < this.size.down; i++){
             let tempArray = [];
-            for (let j = 0; j < this.size.down; j++){
+            for (let j = 0; j < this.size.across; j++){
                 let existingTile = this.tiles.filter((tile: Tile) => tile.position.y === i && tile.position.x === j)
                 tempArray.push(existingTile[0] || null);
             }
@@ -46,6 +46,7 @@ export default class Grid {
     }
 
     updateBoard(): void {
+        console.log(this.buildRepresentation())
         this.updateState(this.buildRepresentation());
     }
 
@@ -73,8 +74,8 @@ export default class Grid {
     availableCells(): CellArray {
         let availableCells: CellArray = [];
 
-        for (let i = 0; i < this.size.across; i++){
-            for (let j = 0; j < this.size.down; j++){
+        for (let i = 0; i < this.size.down; i++){
+            for (let j = 0; j < this.size.across; j++){
                 if (this.state[i][j] === null){
                     availableCells.push({x: i, y: j});
                 }
