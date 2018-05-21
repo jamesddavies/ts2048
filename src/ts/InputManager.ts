@@ -3,12 +3,10 @@ import { Directions } from './enums';
 export default class InputManager {
 
     handleInput: Function;
-    forceUpdate: Function;
     keyMap: { [key: number]: number };
 
-    constructor(handleInput: Function, forceUpdate: Function){
+    constructor(handleInput: Function){
         this.handleInput = handleInput;
-        this.forceUpdate = forceUpdate;
         this.keyMap = {
             //Arrow keys
             38: Directions.Up,
@@ -23,10 +21,6 @@ export default class InputManager {
         document.addEventListener('keydown', (event: KeyboardEvent) => {
             if (event.which !== 85){
                 this.handleInput(this.keyMap[event.which]);
-            }
-
-            if (event.which === 85){
-                this.forceUpdate();
             }
         })
     }

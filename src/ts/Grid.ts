@@ -46,7 +46,6 @@ export default class Grid {
     }
 
     updateBoard(): void {
-        console.log(this.buildRepresentation())
         this.updateState(this.buildRepresentation());
     }
 
@@ -71,21 +70,27 @@ export default class Grid {
         this.updateBoard();
     }
 
+    forEachCell(callback: Function): void {
+        for (let i = 0; i < this.size.down; i++){
+            for (let j = 0; j < this.size.across; j++){
+                callback(this.state[i][j], i, j);
+            }
+        }
+    }
+
     availableCells(): CellArray {
         let availableCells: CellArray = [];
 
-        for (let i = 0; i < this.size.down; i++){
-            for (let j = 0; j < this.size.across; j++){
-                if (this.state[i][j] === null){
-                    availableCells.push({x: i, y: j});
-                }
+        this.forEachCell((tile: Tile|null, i: number, j: number) => {
+            if (tile === null){
+                availableCells.push({x: i, y: j});
             }
-        }
+        })
 
         return availableCells;
     }
 
-    makeTileMoves = (direction: number, modifiers: Modifiers): void => {
+    makeTileMoves(direction: number, modifiers: Modifiers): void {
         this.movedThisTurn = false;
         this.getDirectionalArrays(direction).forEach((arr: TileArray) => {
             arr.forEach((tile: Tile|null) => {
@@ -106,7 +111,7 @@ export default class Grid {
         })
     }
 
-    checkForMerge = (nextTile: Tile, tile: Tile, modifiers: Modifiers): void => {
+    checkForMerge(nextTile: Tile, tile: Tile, modifiers: Modifiers): void {
         if (nextTile instanceof Tile){
             if (!nextTile.mergedThisTurn && nextTile.value === tile.value){
 
@@ -123,7 +128,7 @@ export default class Grid {
         }
     }
 
-    getDirectionalArrays = (direction: number): GridArray => {
+    getDirectionalArrays(direction: number): GridArray {
         switch (Directions[direction]){
             case 'Up':
             case 'Left':
@@ -136,7 +141,7 @@ export default class Grid {
         }
     }
 
-    buildDirectionalArrays = (direction: number): GridArray => {
+    buildDirectionalArrays(direction: number): GridArray {
         var dir = Directions[direction];
         var collection = [];
         var outer = dir === 'Up' || dir === 'Down' ? this.size.across : this.size.down;
@@ -151,13 +156,13 @@ export default class Grid {
         return collection;
     }
 
-    nextTileIsAvailable = (tilePosition: Position, modifiers: Modifiers): boolean => {
+    nextTileIsAvailable(tilePosition: Position, modifiers: Modifiers): boolean {
         let check = this.nextTile(tilePosition, modifiers);
         
         return check === null || !check === undefined;
     }
 
-    nextTile = (tilePosition: Position, modifiers: Modifiers): Tile|null|undefined => {
+    nextTile(tilePosition: Position, modifiers: Modifiers): Tile|null|undefined {
         let nextPos = {
             across: tilePosition.x + parseInt(modifiers.x, 10),
             down: tilePosition.y + parseInt(modifiers.y, 10)
@@ -170,20 +175,27 @@ export default class Grid {
         }        
     }
 
-    endTurn = (): void => {
+    endTurn(): void {
         this.tiles.forEach((tile: Tile) => tile.mergedThisTurn = false)
     }
 
-    tile2048Exists = (): boolean => {
+    tile2048Exists(): boolean {
         return this.tiles.filter((tile: Tile) => tile.value === 2048).length > 0;
     }
 
-    gameOver = (): boolean => {
-        console.log(this.size.down * this.size.across)
+    isGridFull(): boolean {
         return this.tiles.length === (this.size.down * this.size.across);
     }
 
-    endGame = (won: boolean): void => {
+    areMovesLeft(): boolean {
+        return true;
+    }
+
+    isGameOver(): boolean {
+        return this.isGridFull() && this.areMovesLeft();
+    }
+
+    endGame(won: boolean): void {
         if (won){
             this.message = "Well done!";
         } else {
@@ -195,7 +207,7 @@ export default class Grid {
         messageContainer.classList.add('show');
     }
 
-    generateDomElement = () => {
+    generateDomElement(): void {
         var gridElement = document.createElement('div');
         gridElement.classList.add('grid');
         var fragment = document.createDocumentFragment();
