@@ -31,28 +31,28 @@ export default class Tile {
         return availableValues[Math.floor(Math.random() * (availableValues.length))];
     }
 
-    updatePosition = (modifiers: {[key: string]: string}): void => {
+    updatePosition(modifiers: {[key: string]: string}): void {
         this.position.x += parseInt(modifiers.x, 10);
         this.position.y += parseInt(modifiers.y, 10);
     }
 
-    updateValue = (): void => {
+    updateValue(): void {
         this.value *= 2;
         this.mergedThisTurn = true;
         this.domElement.style.background = this.getColor();
     }
 
-    getColor = (): string => {
+    getColor(): string {
         let decimal = '0.' + (this.value * 18);
         let h =  parseFloat(decimal) * (250 - 190) + 190;
         return 'hsl(' + h + ', 50%, 50%)';
     }
 
-    getTranslatePosition = (): string => {
+    getTranslatePosition(): string {
         return "translate(" + this.position.x * this.gridSection + "px, " + this.position.y * this.gridSection + "px)";
     }
 
-    setDomElementStyles = (): void => {
+    setDomElementStyles(): void {
         let halfGutter = (this.gutterWidth / 2).toString();
         this.domElement.style.top = halfGutter.toString() + "px";
         this.domElement.style.left = halfGutter.toString() + "px";
@@ -62,7 +62,7 @@ export default class Tile {
         this.domElement.style.background = this.getColor();
     }
 
-    generateDomElement = (): void => {
+    generateDomElement(): void {
         this.domElement.classList.add('tile');        
         this.setDomElementStyles();
         this.domElement.textContent = this.value.toString();
@@ -74,12 +74,12 @@ export default class Tile {
         }
     }
 
-    updateDomElement = (): void => {
+    updateDomElement(): void {
         this.domElement.style.transform = "translate(" + (this.position.x) * this.gridSection + "px, " + (this.position.y) * this.gridSection + "px)";
         this.domElement.textContent = this.value.toString();
     }
 
-    removeDomElement = (): void => {
+    removeDomElement(): void {
         if (this.domElement) this.domElement.remove();
     }
 }

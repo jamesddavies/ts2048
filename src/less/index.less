@@ -1,21 +1,53 @@
-html {
-    height: 100%;
-}
+@import 'variables';
+@import 'normalise';
 
 body {
-    margin: 0;
-    padding: 0;
+    font-family: @bodyFont;
 }
 
-* {
-    box-sizing: border-box;
+header {
+    height: 60px;
+    width: 100%;
+    background-color: #1C2A41;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    h1, p {
+        color: @lightText;
+        margin: 0;
+        font-weight: normal;
+    }
+}
+
+.options {
+    margin: 40px 0 10px 0;
+    div {
+        width: 503px;
+        margin: 0 auto;
+        button {
+            border: none;
+            background-color: #123E5E;
+            padding: 12px 24px;
+            color: @lightText;
+            font-size: 18px;
+            font-family: @bodyFont;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 2px 2px rgba(0,0,0,0.2);
+            transition: all 300ms ease-out;
+            &:hover {
+                box-shadow: 0 2 6px rgba(0,0,0,0.5);
+                background-color: #1D4370;
+                transform: translateY(-1px);
+            }
+        }
+    }
 }
 
 #grid-container {
     .grid {
         margin: 40px auto;
-        width: 560px;
-        height: 560px;
         background-color: #5F728C;
         border-color: #5F728C;
         border-style: solid;
@@ -23,8 +55,7 @@ body {
         display: flex;
         flex-wrap: wrap;
         box-sizing: content-box;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-        color: #fdfdfd;
+        color: @lightText;
         position: relative;
         .tile-holder {
             background-color: rgba(21, 39, 64, 0.3);
@@ -56,8 +87,7 @@ body {
             background-color: rgba(0,0,0,0.6);
             border-radius: 8px;
             padding: 20px;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            color: #fdfdfd;
+            color: @lightText;
             font-size: 22px;
             opacity: 0;
             transition: all 200ms ease-out;

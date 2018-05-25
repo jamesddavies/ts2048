@@ -39,4 +39,8 @@ export default class GameManager {
         ];
         return vectorMap[direction]
     }
+
+    destroy(): void {
+        
+    }
 }
