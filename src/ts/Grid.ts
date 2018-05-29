@@ -12,6 +12,8 @@ export default class Grid {
     gutterWidth: number;
     movedThisTurn: boolean;
     message: string;
+    vectorMap: Modifiers[];
+    domElement: HTMLDivElement;
 
     constructor (across: number, down: number, tileWidth?: number, gutterWidth?: number) {
         this.size = {across: across, down: down}
@@ -23,6 +25,13 @@ export default class Grid {
         this.gutterWidth = gutterWidth || 14;
         this.movedThisTurn = false;
         this.message = "";
+        this.domElement = document.createElement('div');
+        this.vectorMap = [
+            { x: 0, y: -1 }, // Up
+            { x: 1, y: 0 },  // Right
+            { x: 0, y: 1 },  // Down
+            { x: -1, y : 0 } // Left
+        ];
     }
 
     init(): void {
@@ -64,7 +73,7 @@ export default class Grid {
         for (let i = 0; i < count; i++){
             let rand = Math.floor(Math.random() * available.length);
             let cell = available[rand];
-            this.tiles.push(new Tile(cell.y, cell.x));
+            this.tiles.push(new Tile(cell.y, cell.x, this.tileWidth, this.gutterWidth));
             available.splice(rand, 1);
         }
         this.updateBoard();
@@ -90,7 +99,8 @@ export default class Grid {
         return availableCells;
     }
 
-    makeTileMoves(direction: number, modifiers: Modifiers): void {
+    makeTileMoves(direction: number): void {
+        let modifiers = this.vectorMap[direction];
         this.movedThisTurn = false;
         this.getDirectionalArrays(direction).forEach((arr: TileArray) => {
             arr.forEach((tile: Tile|null) => {
@@ -164,8 +174,8 @@ export default class Grid {
 
     nextTile(tilePosition: Position, modifiers: Modifiers): Tile|null|undefined {
         let nextPos = {
-            across: tilePosition.x + parseInt(modifiers.x, 10),
-            down: tilePosition.y + parseInt(modifiers.y, 10)
+            across: tilePosition.x + modifiers.x,
+            down: tilePosition.y + modifiers.y
         }
 
         if (this.state[nextPos.down]){
@@ -173,6 +183,21 @@ export default class Grid {
         } else {
             return undefined;
         }        
+    }
+
+    getAdjacentTiles(tilePosition: Position): TileArray {
+        let tileArray = [];
+        for (let i = 0; i < this.vectorMap.length; i++){
+            let modifiers = this.vectorMap[i];
+            let x = tilePosition.x + modifiers.x;
+            let y = tilePosition.y + modifiers.y;
+            if (this.state[y] && this.state[y][x] && this.state[y][x] !== null){ //If tile position is valid
+                if (x !== tilePosition.x || y !== tilePosition.y){ //If tile position isn't the same as current tile
+                    tileArray.push(this.state[y][x]);
+                }
+            }
+        }
+        return tileArray;
     }
 
     endTurn(): void {
@@ -188,11 +213,19 @@ export default class Grid {
     }
 
     areMovesLeft(): boolean {
-        return true;
+        let availableTiles: TileArray = [];
+        this.tiles.forEach((tile: Tile) => {
+            this.getAdjacentTiles(tile.position).forEach((adjacentTile: Tile) => {
+                if (adjacentTile.value === tile.value){
+                    availableTiles.push(adjacentTile);
+                }
+            })
+        })
+        return availableTiles.length > 0;
     }
 
     isGameOver(): boolean {
-        return this.isGridFull() && this.areMovesLeft();
+        return this.isGridFull() ? !this.areMovesLeft() : false;
     }
 
     endGame(won: boolean): void {
@@ -207,12 +240,7 @@ export default class Grid {
         messageContainer.classList.add('show');
     }
 
-    generateDomElement(): void {
-        var gridElement = document.createElement('div');
-        gridElement.classList.add('grid');
-        var fragment = document.createDocumentFragment();
-        var tileWidth = this.tileWidth.toString() + "px";
-        var tileMargin = (this.gutterWidth / 2).toString() + "px";
+    addDomTileHolders(fragment: DocumentFragment, tileWidth: string, tileMargin: string): void {
         for (let i = 0; i < this.size.across; i++){
             for (let j = 0; j < this.size.down; j++){
                 let content = document.createElement('div');
@@ -223,14 +251,37 @@ export default class Grid {
                 fragment.appendChild(content);
             }
         }
-        gridElement.style.width = (this.size.across * this.tileWidth + (this.gutterWidth * (this.size.across))).toString() + "px";
-        gridElement.style.height = (this.size.down * this.tileWidth + (this.gutterWidth * (this.size.down))).toString() + "px";
-        gridElement.style.borderWidth = tileMargin;
+    }
+
+    addDomMessageContainer(fragment: DocumentFragment): void {
         let messageContainer = document.createElement('div');
         messageContainer.classList.add('message-container');
         fragment.appendChild(messageContainer);
-        gridElement.appendChild(fragment);
+    }
+
+    generateDomChildren(tileWidth: string, tileMargin: string): DocumentFragment {
+        var fragment = document.createDocumentFragment();
+        this.addDomTileHolders(fragment, tileWidth, tileMargin);
+        this.addDomMessageContainer(fragment);
+        return fragment;
+    }
+
+    generateDomElement(): void {
+        var tileWidth = this.tileWidth.toString() + "px";
+        var tileMargin = (this.gutterWidth / 2).toString() + "px";
+                
+        this.domElement.classList.add('grid');
+        this.domElement.style.width = (this.size.across * this.tileWidth + (this.gutterWidth * (this.size.across))).toString() + "px";
+        this.domElement.style.height = (this.size.down * this.tileWidth + (this.gutterWidth * (this.size.down))).toString() + "px";
+        this.domElement.style.borderWidth = tileMargin;
+
+        this.domElement.appendChild(this.generateDomChildren(tileWidth, tileMargin));
+
         let gridContainer = document.querySelector("#grid-container");
-        if (gridContainer) gridContainer.appendChild(gridElement);
+        if (gridContainer) gridContainer.appendChild(this.domElement);
+    }
+
+    removeDomElement(): void {
+        this.domElement.remove();
     }
 }

@@ -1,4 +1,4 @@
-import { Position } from './types';
+import { Position, Modifiers } from './types';
 
 export default class Tile {
     value: number;
@@ -11,8 +11,8 @@ export default class Tile {
     gridSection: number;
     mergedThisTurn: boolean;
 
-    constructor (x: number, y: number, value?: number, width: number = 110, gutterWidth: number = 14){
-        this.value = value || this.setNewValue();
+    constructor (x: number, y: number, width: number, gutterWidth: number){
+        this.value = this.setNewValue();
         this.position = {
             x: x,
             y: y
@@ -31,9 +31,9 @@ export default class Tile {
         return availableValues[Math.floor(Math.random() * (availableValues.length))];
     }
 
-    updatePosition(modifiers: {[key: string]: string}): void {
-        this.position.x += parseInt(modifiers.x, 10);
-        this.position.y += parseInt(modifiers.y, 10);
+    updatePosition(modifiers: Modifiers): void {
+        this.position.x += modifiers.x;
+        this.position.y += modifiers.y;
     }
 
     updateValue(): void {
@@ -80,6 +80,6 @@ export default class Tile {
     }
 
     removeDomElement(): void {
-        if (this.domElement) this.domElement.remove();
+        this.domElement.remove();
     }
 }

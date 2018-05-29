@@ -1,11 +1,13 @@
 import Tile from './Tile';
 
-export type TileArray = (Tile|null)[];
+export type CellArray = Position[];
 
 export type GridArray = TileArray[];
 
-export type Modifiers = {[key: string]: string};
+export type TileArray = (Tile|null)[];
+
+export type KeyMap = {[key: number]: number};
+
+export type Modifiers = {[key: string]: number};
 
 export type Position = {[key: string]: number};
-
-export type CellArray = Position[];

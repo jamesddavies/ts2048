@@ -23,8 +23,9 @@ header {
 .options {
     margin: 40px 0 10px 0;
     div {
-        width: 503px;
+        width: 90%;
         margin: 0 auto;
+        text-align: center;
         button {
             border: none;
             background-color: #123E5E;
@@ -57,6 +58,7 @@ header {
         box-sizing: content-box;
         color: @lightText;
         position: relative;
+        width: 96%;
         .tile-holder {
             background-color: rgba(21, 39, 64, 0.3);
             border-radius: 8px;
@@ -72,6 +74,9 @@ header {
             opacity: 0;
             &.show {
                 opacity: 1;
+            }
+            @media (max-width: 600px){
+                font-size: 26px;
             }
         }
         .message-container {
