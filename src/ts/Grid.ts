@@ -39,6 +39,43 @@ export default class Grid {
         this.addStartTiles();
     }
 
+    addStartTiles(): void {
+        this.addRandomTiles(this.startTiles);
+    }
+
+    // State management
+
+    addRandomTiles(count: number): void {
+        let available = this.availableCells();
+        for (let i = 0; i < count; i++){
+            let rand = Math.floor(Math.random() * available.length);
+            let cell = available[rand];
+            this.tiles.push(new Tile(cell.y, cell.x, this.tileWidth, this.gutterWidth));
+            available.splice(rand, 1);
+        }
+        this.updateBoard();
+    }
+
+    availableCells(): CellArray {
+        let availableCells: CellArray = [];
+
+        this.forEachCell((tile: Tile|null, i: number, j: number) => {
+            if (tile === null){
+                availableCells.push({x: i, y: j});
+            }
+        })
+
+        return availableCells;
+    }
+
+    forEachCell(callback: Function): void {
+        for (let i = 0; i < this.size.down; i++){
+            for (let j = 0; j < this.size.across; j++){
+                callback(this.state[i][j], i, j);
+            }
+        }
+    }
+
     buildRepresentation(): GridArray {
         let gridState = [];
         
@@ -64,40 +101,7 @@ export default class Grid {
         this.tiles.forEach((tile: Tile) => !tile.domRepresentation ? tile.generateDomElement() : tile.updateDomElement())
     }
 
-    addStartTiles(): void {
-        this.addRandomTiles(this.startTiles);
-    }
-
-    addRandomTiles(count: number): void {
-        let available = this.availableCells();
-        for (let i = 0; i < count; i++){
-            let rand = Math.floor(Math.random() * available.length);
-            let cell = available[rand];
-            this.tiles.push(new Tile(cell.y, cell.x, this.tileWidth, this.gutterWidth));
-            available.splice(rand, 1);
-        }
-        this.updateBoard();
-    }
-
-    forEachCell(callback: Function): void {
-        for (let i = 0; i < this.size.down; i++){
-            for (let j = 0; j < this.size.across; j++){
-                callback(this.state[i][j], i, j);
-            }
-        }
-    }
-
-    availableCells(): CellArray {
-        let availableCells: CellArray = [];
-
-        this.forEachCell((tile: Tile|null, i: number, j: number) => {
-            if (tile === null){
-                availableCells.push({x: i, y: j});
-            }
-        })
-
-        return availableCells;
-    }
+    // Handle tile moves
 
     makeTileMoves(direction: number): void {
         let modifiers = this.vectorMap[direction];
@@ -185,6 +189,12 @@ export default class Grid {
         }        
     }
 
+    endTurn(): void {
+        this.tiles.forEach((tile: Tile) => tile.mergedThisTurn = false)
+    }
+
+    // Win/Lose Conditions
+
     getAdjacentTiles(tilePosition: Position): TileArray {
         let tileArray = [];
         for (let i = 0; i < this.vectorMap.length; i++){
@@ -198,10 +208,6 @@ export default class Grid {
             }
         }
         return tileArray;
-    }
-
-    endTurn(): void {
-        this.tiles.forEach((tile: Tile) => tile.mergedThisTurn = false)
     }
 
     tile2048Exists(): boolean {
@@ -239,6 +245,8 @@ export default class Grid {
         messageContainer.textContent = this.message;
         messageContainer.classList.add('show');
     }
+
+    // DOM Interaction
 
     addDomTileHolders(fragment: DocumentFragment, tileWidth: string, tileMargin: string): void {
         for (let i = 0; i < this.size.across; i++){

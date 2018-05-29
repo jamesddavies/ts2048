@@ -21,6 +21,10 @@ export default class GameManager {
         this.grid.init();
     }
 
+    isMobile(): boolean {
+        return window.innerWidth <= this.mobileBreakpoint;
+    }
+
     generateGrid(rows: number, columns: number): void {
         if (this.isMobile()){
             let gutterWidth = (window.innerWidth / 100) * 2;
@@ -45,12 +49,9 @@ export default class GameManager {
         }
     }
 
-    isMobile(): boolean {
-        return window.innerWidth <= this.mobileBreakpoint;
-    }
-
     destroy(): void {
         this.inputManager.destroy();
         this.grid.removeDomElement();        
     }
+
 }

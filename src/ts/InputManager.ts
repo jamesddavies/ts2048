@@ -22,27 +22,10 @@ export default class InputManager {
         this.listen();
     }
 
-    keydownHandler = (event: KeyboardEvent): void => {
-        if (this.keyMap.hasOwnProperty(event.which.toString())){
-            this.handleInput(this.keyMap[event.which]);
-        }
-    }
-
-    touchStartHandler = (event: TouchEvent): void => {
-        this.touchStartPosition = {
-            x: event.changedTouches[0].pageX,
-            y: event.changedTouches[0].pageY
-        }
-    }
-
-    touchEndHandler = (event: TouchEvent): void => {
-        this.touchEndPosition = {
-            x: event.changedTouches[0].pageX,
-            y: event.changedTouches[0].pageY
-        }
-
-        var touchDirection = this.getTouchDirection();
-        if (touchDirection !== null) this.handleInput(touchDirection);
+    calculateDirection(position1: Position, position2: Position, value1: string, value2: string): boolean {
+        return ((position1[value1] > (position2[value1] + 100)) && 
+                  (position1[value2] < (position2[value2] + 50)) && 
+                    (position1[value2] > (position2[value2] - 50)))
     }
 
     getTouchDirection(): number | null {
@@ -59,10 +42,27 @@ export default class InputManager {
         }
     }
 
-    calculateDirection(position1: Position, position2: Position, value1: string, value2: string): boolean {
-        return ((position1[value1] > (position2[value1] + 100)) && 
-                  (position1[value2] < (position2[value2] + 50)) && 
-                    (position1[value2] > (position2[value2] - 50)))
+    keydownHandler = (event: KeyboardEvent): void => {
+        if (this.keyMap.hasOwnProperty(event.which.toString())){
+            this.handleInput(this.keyMap[event.which]);
+        }
+    }
+
+    touchEndHandler = (event: TouchEvent): void => {
+        this.touchEndPosition = {
+            x: event.changedTouches[0].pageX,
+            y: event.changedTouches[0].pageY
+        }
+
+        var touchDirection = this.getTouchDirection();
+        if (touchDirection !== null) this.handleInput(touchDirection);
+    }
+
+    touchStartHandler = (event: TouchEvent): void => {
+        this.touchStartPosition = {
+            x: event.changedTouches[0].pageX,
+            y: event.changedTouches[0].pageY
+        }
     }
 
     listen(): void {
@@ -76,4 +76,5 @@ export default class InputManager {
         this.domElement.removeEventListener('touchstart', this.touchStartHandler);
         this.domElement.removeEventListener('touchend', this.touchEndHandler);
     }
+
 }
