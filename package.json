@@ -7,6 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "concurrently \"tsc -w\" \"less-watch-compiler\" \"watchify -e js/index.js -o js/bundle.js\" \"ws\" ",
     "build": "tsc && lessc src/less/index.less css/index.css && browserify -e js/index.js -o js/bundle.js",
+    "play": "ws",
     "installGlobalDependencies": "npm install -g typescript less concurrently less-watch-compiler browserify watchify local-web-server"
   },
   "keywords": [
